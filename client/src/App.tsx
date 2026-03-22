@@ -538,7 +538,7 @@ export default function App() {
             <a href="mailto:shannon@govorentoe.com" className="hover:text-white/60 transition-colors">
               Contact
             </a>
-            <a href="#" className="hover:text-white/60 transition-colors">
+            <a href="/privacy.html" className="hover:text-white/60 transition-colors">
               Privacy
             </a>
           </div>
