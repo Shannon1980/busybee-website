@@ -56,8 +56,8 @@ function ListeningWave({ active }: { active: boolean }) {
 
 // ── Voice command demo ──────────────────────────────────────────────────────
 const DEMO_COMMANDS = [
-  { command: "Schedule a team lunch Friday at noon", response: "Done — Team Lunch added for Friday, April 18 at 12:00 PM." },
-  { command: "Move my 3pm meeting to Thursday", response: "Got it — moved to Thursday, April 17 at 3:00 PM." },
+  { command: "Schedule a team lunch Friday at noon", response: "Done — Team Lunch added for this Friday at 12:00 PM." },
+  { command: "Move my 3pm meeting to Thursday", response: "Got it — moved to Thursday at 3:00 PM." },
   { command: "What's my day look like tomorrow?", response: "Tomorrow you have 3 events: Standup at 9am, Design review at 1pm, and dinner at 7pm." },
   { command: "Find 45 minutes for focused work this week", response: "Found it — Tuesday 10:15 AM to 11:00 AM is open. Want me to block it?" },
 ];
@@ -122,6 +122,7 @@ function VoiceDemoCard() {
               if (timerRef.current) clearTimeout(timerRef.current);
               run(i);
             }}
+            aria-label={`Show demo ${i + 1}: ${d.command}`}
             className={`text-xs px-3 py-1 rounded-full border transition-all ${
               i === activeIdx
                 ? "bg-honey text-navy border-honey"
@@ -221,32 +222,40 @@ function WaitlistForm({ source = "hero", dark = false }: { source?: string; dark
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-      <input
-        type="email"
-        required
-        placeholder="your@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className={`flex-1 px-4 py-3 rounded-xl text-sm outline-none transition-all border ${
-          dark
-            ? "bg-white/10 border-white/20 text-white placeholder-white/40 focus:border-honey focus:bg-white/15"
-            : "bg-navy border-navy-light text-white placeholder-white/40 focus:border-honey"
-        }`}
-      />
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="bg-honey hover:bg-honey-dark text-navy font-bold px-6 py-3 rounded-xl text-sm transition-all disabled:opacity-60 whitespace-nowrap flex-shrink-0 shadow-lg shadow-honey/20"
-      >
-        {status === "loading" ? "Joining…" : "Get Early Access"}
-      </button>
+    <div className="flex flex-col gap-2 w-full max-w-md">
+      <form onSubmit={submit} className="flex flex-col sm:flex-row gap-3 w-full">
+        <input
+          type="email"
+          required
+          aria-label="Email address"
+          placeholder="your@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className={`flex-1 px-4 py-3 rounded-xl text-sm outline-none transition-all border ${
+            dark
+              ? "bg-white/10 border-white/20 text-white placeholder-white/40 focus:border-honey focus:bg-white/15"
+              : "bg-navy border-navy-light text-white placeholder-white/40 focus:border-honey"
+          }`}
+        />
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="bg-honey hover:bg-honey-dark text-navy font-bold px-6 py-3 rounded-xl text-sm transition-all disabled:opacity-60 whitespace-nowrap flex-shrink-0 shadow-lg shadow-honey/20"
+        >
+          {status === "loading" ? "Joining…" : "Get Early Access"}
+        </button>
+      </form>
       {status === "error" && (
-        <p className="text-red-400 text-xs mt-1 sm:col-span-2">
-          Something went wrong. Please try again.
-        </p>
+        <p className="text-red-400 text-xs">Something went wrong. Please try again.</p>
       )}
-    </form>
+      <p className="text-xs text-white/50">
+        By signing up you agree to our{" "}
+        <a href="/privacy.html" className="underline hover:text-white/80 transition-colors">
+          Privacy Policy
+        </a>
+        .
+      </p>
+    </div>
   );
 }
 
@@ -377,7 +386,7 @@ export default function App() {
 
             <WaitlistForm source="hero" />
 
-            <p className="text-xs text-white/30 mt-3">
+            <p className="text-xs text-white/50 mt-3">
               Free early access · iOS · No spam, ever
             </p>
           </div>
@@ -417,7 +426,7 @@ export default function App() {
                 key={f.title}
                 className="bg-navy-light border border-white/8 rounded-2xl p-6 hover:border-honey/30 transition-all group"
               >
-                <div className="text-3xl mb-4">{f.icon}</div>
+                <div className="text-3xl mb-4" aria-hidden="true">{f.icon}</div>
                 <h3 className="font-semibold text-white mb-2 group-hover:text-honey transition-colors">
                   {f.title}
                 </h3>
@@ -472,7 +481,7 @@ export default function App() {
                 key={p.role}
                 className="bg-navy-light border border-white/8 rounded-2xl p-6"
               >
-                <div className="text-4xl mb-4">{p.emoji}</div>
+                <div className="text-4xl mb-4" aria-hidden="true">{p.emoji}</div>
                 <p className="text-sm font-semibold text-honey mb-3">{p.role}</p>
                 <p className="text-sm text-white/60 italic leading-relaxed">"{p.quote}"</p>
               </div>
@@ -520,7 +529,7 @@ export default function App() {
           <div className="flex justify-center">
             <WaitlistForm source="footer" />
           </div>
-          <p className="text-xs text-white/25 mt-4">
+          <p className="text-xs text-white/50 mt-4">
             iOS only · Free early access · No credit card required
           </p>
         </div>
@@ -528,7 +537,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-white/10 py-8 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/30">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/50">
           <div className="flex items-center gap-2">
             <WaveformBeeIcon size={18} />
             <span>Busy Bee by Vorentoe</span>

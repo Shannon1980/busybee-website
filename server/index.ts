@@ -1,21 +1,30 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import path from "path";
 import { fileURLToPath } from "url";
 import { db } from "./db.js";
 import { waitlistSignups, insertWaitlistSchema } from "./schema.js";
-import { eq } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3001;
 const isProd = process.env.NODE_ENV === "production";
 
+app.use(helmet());
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: isProd ? "https://busybee.app" : true }));
+
+const waitlistLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: "Too many requests. Please try again later." },
+});
 
 // Waitlist signup
-app.post("/api/waitlist", async (req, res) => {
+app.post("/api/waitlist", waitlistLimiter, async (req, res) => {
   try {
     const parsed = insertWaitlistSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -46,8 +55,8 @@ app.post("/api/waitlist", async (req, res) => {
 // Waitlist count (public, no auth needed for social proof)
 app.get("/api/waitlist/count", async (_req, res) => {
   try {
-    const rows = await db.select().from(waitlistSignups);
-    return res.json({ count: rows.length });
+    const result = await db.select({ value: count() }).from(waitlistSignups);
+    return res.json({ count: result[0].value });
   } catch (err) {
     return res.status(500).json({ error: "Could not fetch count." });
   }
