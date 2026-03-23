@@ -45,8 +45,8 @@ export default {
           to: { opacity: "1", transform: "translateY(0)" },
         },
         pulseGlow: {
-          "0%, 100%": { boxShadow: "0 0 0 0 rgba(255, 215, 0, 0)" },
-          "50%": { boxShadow: "0 0 20px 6px rgba(255, 215, 0, 0.3)" },
+          "0%, 100%": { boxShadow: "0 0 0 0 rgba(245, 166, 35, 0)" },
+          "50%": { boxShadow: "0 0 20px 6px rgba(245, 166, 35, 0.3)" },
         },
       },
     },

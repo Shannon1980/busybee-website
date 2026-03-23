@@ -1,10 +1,26 @@
 import { useState, useEffect, useRef } from "react";
 
 // ── Waveform icon (Sound Wave Bee concept) ──────────────────────────────────
-function WaveformBeeIcon({ size = 40, animated = false }: { size?: number; animated?: boolean }) {
+function WaveformBeeIcon({
+  size = 40,
+  animated = false,
+  label,
+}: {
+  size?: number;
+  animated?: boolean;
+  label?: string;
+}) {
   const bars = [3, 6, 9, 12, 9, 6, 3];
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 40 40"
+      fill="none"
+      aria-hidden={label ? undefined : "true"}
+      role={label ? "img" : undefined}
+      aria-label={label}
+    >
       {/* Bee body dot (microphone) */}
       <circle cx="20" cy="24" r="3.5" fill="#F5A623" />
       {/* Waveform wings */}
@@ -36,7 +52,7 @@ function WaveformBeeIcon({ size = 40, animated = false }: { size?: number; anima
 function ListeningWave({ active }: { active: boolean }) {
   const heights = [20, 35, 55, 70, 55, 35, 20, 35, 55, 70, 55, 35, 20];
   return (
-    <div className="flex items-center gap-[3px] h-16">
+    <div className="flex items-center gap-[3px] h-16" aria-hidden="true">
       {heights.map((h, i) => (
         <div
           key={i}
@@ -56,10 +72,22 @@ function ListeningWave({ active }: { active: boolean }) {
 
 // ── Voice command demo ──────────────────────────────────────────────────────
 const DEMO_COMMANDS = [
-  { command: "Schedule a team lunch Friday at noon", response: "Done — Team Lunch added for Friday, April 18 at 12:00 PM." },
-  { command: "Move my 3pm meeting to Thursday", response: "Got it — moved to Thursday, April 17 at 3:00 PM." },
-  { command: "What's my day look like tomorrow?", response: "Tomorrow you have 3 events: Standup at 9am, Design review at 1pm, and dinner at 7pm." },
-  { command: "Find 45 minutes for focused work this week", response: "Found it — Tuesday 10:15 AM to 11:00 AM is open. Want me to block it?" },
+  {
+    command: "Schedule a team lunch Friday at noon",
+    response: "Done — Team Lunch added for Friday, April 18, 2026 at 12:00 PM.",
+  },
+  {
+    command: "Move my 3pm meeting to Thursday",
+    response: "Got it — moved to Thursday, April 17, 2026 at 3:00 PM.",
+  },
+  {
+    command: "What's my day look like tomorrow?",
+    response: "Tomorrow you have 3 events: Standup at 9am, Design review at 1pm, and dinner at 7pm.",
+  },
+  {
+    command: "Find 45 minutes for focused work this week",
+    response: "Found it — Tuesday 10:15 AM to 11:00 AM is open. Want me to block it?",
+  },
 ];
 
 function VoiceDemoCard() {
@@ -106,7 +134,7 @@ function VoiceDemoCard() {
   return (
     <div className="relative bg-navy-light rounded-2xl border border-white/10 p-6 max-w-md w-full shadow-2xl">
       {/* Phone chrome */}
-      <div className="flex items-center gap-2 mb-5">
+      <div className="flex items-center gap-2 mb-5" aria-hidden="true">
         <div className="w-2 h-2 rounded-full bg-red-400/60" />
         <div className="w-2 h-2 rounded-full bg-yellow-400/60" />
         <div className="w-2 h-2 rounded-full bg-green-400/60" />
@@ -114,7 +142,7 @@ function VoiceDemoCard() {
       </div>
 
       {/* Command chips */}
-      <div className="flex flex-wrap gap-2 mb-5">
+      <div className="flex flex-wrap gap-2 mb-5" role="group" aria-label="Voice command demos">
         {DEMO_COMMANDS.map((d, i) => (
           <button
             key={i}
@@ -122,6 +150,8 @@ function VoiceDemoCard() {
               if (timerRef.current) clearTimeout(timerRef.current);
               run(i);
             }}
+            aria-label={`Demo command ${i + 1}: ${d.command}`}
+            aria-pressed={i === activeIdx}
             className={`text-xs px-3 py-1 rounded-full border transition-all ${
               i === activeIdx
                 ? "bg-honey text-navy border-honey"
@@ -135,7 +165,10 @@ function VoiceDemoCard() {
 
       {/* User voice command */}
       <div className="flex items-start gap-3 mb-4">
-        <div className="mt-1 w-7 h-7 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 text-xs">
+        <div
+          className="mt-1 w-7 h-7 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 text-xs"
+          aria-hidden="true"
+        >
           You
         </div>
         <div className="bg-white/8 rounded-xl rounded-tl-none px-4 py-3 text-sm text-white/90 flex-1">
@@ -145,14 +178,25 @@ function VoiceDemoCard() {
 
       {/* Waveform listening */}
       <div className="flex justify-center mb-4">
-        <div className={`transition-all duration-300 ${phase === "listening" ? "animate-pulse-glow rounded-full p-3" : "p-3"}`}>
+        <div
+          className={`transition-all duration-300 ${
+            phase === "listening" ? "animate-pulse-glow rounded-full p-3" : "p-3"
+          }`}
+        >
           <ListeningWave active={phase === "listening"} />
         </div>
       </div>
 
       {/* Assistant response */}
-      <div className="flex items-start gap-3 min-h-[60px]">
-        <div className="mt-1 w-7 h-7 rounded-full bg-honey/20 flex items-center justify-center flex-shrink-0">
+      <div
+        className="flex items-start gap-3 min-h-[60px]"
+        aria-live="polite"
+        aria-label="Busy Bee response"
+      >
+        <div
+          className="mt-1 w-7 h-7 rounded-full bg-honey/20 flex items-center justify-center flex-shrink-0"
+          aria-hidden="true"
+        >
           <WaveformBeeIcon size={16} />
         </div>
         <div className="bg-honey/10 border border-honey/20 rounded-xl rounded-tl-none px-4 py-3 text-sm text-honey flex-1">
@@ -160,7 +204,9 @@ function VoiceDemoCard() {
           {(phase === "responding" || phase === "done") && (
             <>
               {displayedResponse}
-              {phase === "responding" && <span className="inline-block w-0.5 h-3.5 bg-honey ml-0.5 animate-pulse" />}
+              {phase === "responding" && (
+                <span className="inline-block w-0.5 h-3.5 bg-honey ml-0.5 animate-pulse" aria-hidden="true" />
+              )}
             </>
           )}
           {phase === "idle" && <span className="text-white/20">...</span>}
@@ -173,7 +219,9 @@ function VoiceDemoCard() {
 // ── Waitlist form ───────────────────────────────────────────────────────────
 function WaitlistForm({ source = "hero", dark = false }: { source?: string; dark?: boolean }) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "duplicate" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "duplicate" | "error">(
+    "idle"
+  );
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,7 +247,7 @@ function WaitlistForm({ source = "hero", dark = false }: { source?: string; dark
   if (status === "success") {
     return (
       <div className="flex items-center gap-3 bg-honey/10 border border-honey/30 rounded-xl px-5 py-4 max-w-md">
-        <span className="text-2xl">🐝</span>
+        <span className="text-2xl" aria-hidden="true">🐝</span>
         <div>
           <p className="font-semibold text-honey">You're on the list!</p>
           <p className="text-sm text-white/60">We'll email you the moment Busy Bee launches.</p>
@@ -211,7 +259,7 @@ function WaitlistForm({ source = "hero", dark = false }: { source?: string; dark
   if (status === "duplicate") {
     return (
       <div className="flex items-center gap-3 bg-white/5 border border-white/20 rounded-xl px-5 py-4 max-w-md">
-        <span className="text-2xl">✓</span>
+        <span className="text-2xl" aria-hidden="true">✓</span>
         <div>
           <p className="font-semibold text-white/90">Already on the list!</p>
           <p className="text-sm text-white/50">You're already signed up. We'll be in touch soon.</p>
@@ -221,32 +269,46 @@ function WaitlistForm({ source = "hero", dark = false }: { source?: string; dark
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-      <input
-        type="email"
-        required
-        placeholder="your@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className={`flex-1 px-4 py-3 rounded-xl text-sm outline-none transition-all border ${
-          dark
-            ? "bg-white/10 border-white/20 text-white placeholder-white/40 focus:border-honey focus:bg-white/15"
-            : "bg-navy border-navy-light text-white placeholder-white/40 focus:border-honey"
-        }`}
-      />
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="bg-honey hover:bg-honey-dark text-navy font-bold px-6 py-3 rounded-xl text-sm transition-all disabled:opacity-60 whitespace-nowrap flex-shrink-0 shadow-lg shadow-honey/20"
-      >
-        {status === "loading" ? "Joining…" : "Get Early Access"}
-      </button>
+    <div className="flex flex-col gap-2 w-full max-w-md">
+      <form onSubmit={submit} className="flex flex-col sm:flex-row gap-3 w-full">
+        <label htmlFor={`email-${source}`} className="sr-only">
+          Email address
+        </label>
+        <input
+          id={`email-${source}`}
+          type="email"
+          required
+          placeholder="your@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          aria-label="Email address"
+          className={`flex-1 px-4 py-3 rounded-xl text-sm outline-none transition-all border ${
+            dark
+              ? "bg-white/10 border-white/20 text-white placeholder-white/40 focus:border-honey focus:bg-white/15"
+              : "bg-navy border-navy-light text-white placeholder-white/40 focus:border-honey"
+          }`}
+        />
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="bg-honey hover:bg-honey-dark text-navy font-bold px-6 py-3 rounded-xl text-sm transition-all disabled:opacity-60 whitespace-nowrap flex-shrink-0 shadow-lg shadow-honey/20"
+        >
+          {status === "loading" ? "Joining…" : "Get Early Access"}
+        </button>
+      </form>
       {status === "error" && (
-        <p className="text-red-400 text-xs mt-1 sm:col-span-2">
+        <p className="text-red-400 text-xs" role="alert">
           Something went wrong. Please try again.
         </p>
       )}
-    </form>
+      <p className="text-xs text-white/40">
+        By joining you agree to our{" "}
+        <a href="/privacy.html" className="underline hover:text-white/60 transition-colors">
+          Privacy Policy
+        </a>
+        .
+      </p>
+    </div>
   );
 }
 
@@ -264,15 +326,16 @@ function Nav() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "bg-navy/95 backdrop-blur-md border-b border-white/10 py-3" : "py-5"
       }`}
+      aria-label="Main navigation"
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <WaveformBeeIcon size={28} animated />
-          <span className="font-bold text-lg tracking-tight">
+        <a href="/" className="flex items-center gap-2" aria-label="Busy Bee — home">
+          <WaveformBeeIcon size={28} animated label="Busy Bee logo" />
+          <span className="font-bold text-lg tracking-tight" aria-hidden="true">
             <span className="text-honey">Busy</span>{" "}
             <span className="text-white">Bee</span>
           </span>
-        </div>
+        </a>
         <a
           href="#waitlist"
           className="bg-honey hover:bg-honey-dark text-navy font-semibold px-4 py-2 rounded-lg text-sm transition-all"
@@ -346,200 +409,216 @@ const PERSONAS = [
 export default function App() {
   return (
     <div className="min-h-screen bg-navy font-sans">
+      {/* Skip to main content link — visible on keyboard focus */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-honey focus:text-navy focus:font-bold focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm"
+      >
+        Skip to main content
+      </a>
+
       <Nav />
 
-      {/* Hero */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-16 overflow-hidden">
-        {/* Background glow */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-honey/5 rounded-full blur-3xl pointer-events-none" />
+      <main id="main-content">
+        {/* Hero */}
+        <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-16 overflow-hidden">
+          {/* Background glow */}
+          <div
+            className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-honey/5 rounded-full blur-3xl pointer-events-none"
+            aria-hidden="true"
+          />
 
-        <div className="relative max-w-6xl w-full mx-auto grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left: copy */}
-          <div>
-            <div className="inline-flex items-center gap-2 bg-honey/10 border border-honey/20 rounded-full px-4 py-1.5 text-sm text-honey mb-6">
-              <WaveformBeeIcon size={16} />
-              Launching April 14, 2026 — Join the waitlist
+          <div className="relative max-w-6xl w-full mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 bg-honey/10 border border-honey/20 rounded-full px-4 py-1.5 text-sm text-honey mb-6">
+                <WaveformBeeIcon size={16} />
+                Launching April 14, 2026 — Join the waitlist
+              </div>
+
+              <h1 className="text-5xl sm:text-6xl font-black leading-[1.05] tracking-tight mb-6">
+                <span className="text-white">Say it.</span>
+                <br />
+                <span className="text-gradient">Scheduled.</span>
+              </h1>
+
+              <p className="text-lg text-white/70 leading-relaxed mb-4 max-w-lg">
+                Busy Bee is the voice-first calendar assistant that schedules your life{" "}
+                <strong className="text-white/90">while your hands are full.</strong>
+              </p>
+              <p className="text-base text-white/50 mb-8 max-w-lg">
+                No typing, no tapping, no switching apps. Just talk — and it's done.
+              </p>
+
+              <WaitlistForm source="hero" />
+
+              <p className="text-xs text-white/50 mt-3">
+                Free early access · iOS · No spam, ever
+              </p>
             </div>
 
-            <h1 className="text-5xl sm:text-6xl font-black leading-[1.05] tracking-tight mb-6">
-              <span className="text-white">Say it.</span>
-              <br />
-              <span className="text-gradient">Scheduled.</span>
-            </h1>
-
-            <p className="text-lg text-white/70 leading-relaxed mb-4 max-w-lg">
-              Busy Bee is the voice-first calendar assistant that schedules your life{" "}
-              <strong className="text-white/90">while your hands are full.</strong>
-            </p>
-            <p className="text-base text-white/50 mb-8 max-w-lg">
-              No typing, no tapping, no switching apps. Just talk — and it's done.
-            </p>
-
-            <WaitlistForm source="hero" />
-
-            <p className="text-xs text-white/30 mt-3">
-              Free early access · iOS · No spam, ever
-            </p>
+            {/* Right: demo */}
+            <div className="flex justify-center lg:justify-end">
+              <VoiceDemoCard />
+            </div>
           </div>
+        </section>
 
-          {/* Right: demo */}
-          <div className="flex justify-center lg:justify-end">
-            <VoiceDemoCard />
+        {/* Social proof bar */}
+        <section className="border-y border-white/10 bg-navy-dark py-5 px-6" aria-label="Platform integrations">
+          <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-x-10 gap-y-3 text-sm text-white/50 text-center">
+            <span><span aria-hidden="true">📅 </span>Google Calendar · iCloud · Outlook</span>
+            <span><span aria-hidden="true">🔒 </span>Your data stays yours</span>
+            <span><span aria-hidden="true">📱 </span>iOS — iPhone &amp; iPad</span>
+            <span><span aria-hidden="true">🐝 </span>Built by Vorentoe</span>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Social proof bar */}
-      <section className="border-y border-white/10 bg-navy-dark py-5 px-6">
-        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-x-10 gap-y-3 text-sm text-white/50 text-center">
-          <span>📅 Google Calendar · iCloud · Outlook</span>
-          <span>🔒 Your data stays yours</span>
-          <span>📱 iOS — iPhone & iPad</span>
-          <span>🐝 Built by Vorentoe</span>
-        </div>
-      </section>
+        {/* Features */}
+        <section className="py-24 px-6" aria-labelledby="features-heading">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14">
+              <h2 id="features-heading" className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                Your calendar finally <span className="text-gradient">listens.</span>
+              </h2>
+              <p className="text-white/50 max-w-xl mx-auto">
+                Everything a modern calendar should do — controlled entirely by your voice.
+              </p>
+            </div>
 
-      {/* Features */}
-      <section className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Your calendar finally <span className="text-gradient">listens.</span>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {FEATURES.map((f) => (
+                <div
+                  key={f.title}
+                  className="bg-navy-light border border-white/8 rounded-2xl p-6 hover:border-honey/30 transition-all group"
+                >
+                  <div className="text-3xl mb-4" aria-hidden="true">{f.icon}</div>
+                  <h3 className="font-semibold text-white mb-2 group-hover:text-honey transition-colors">
+                    {f.title}
+                  </h3>
+                  <p className="text-sm text-white/50 leading-relaxed">{f.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Voice commands showcase */}
+        <section className="py-20 px-6 bg-navy-dark" aria-labelledby="commands-heading">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 id="commands-heading" className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Just say what you need.
             </h2>
-            <p className="text-white/50 max-w-xl mx-auto">
-              Everything a modern calendar should do — controlled entirely by your voice.
-            </p>
+            <p className="text-white/50 mb-12">Real commands. Real results.</p>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {[
+                "Schedule a team lunch Friday at noon",
+                "Move my dentist appointment to next week",
+                "What's tomorrow look like?",
+                "Find 45 minutes for focused work this week",
+                "Block Thursday afternoon — I need to prep",
+                "Remind me about the Johnson proposal at 8am Monday",
+              ].map((cmd) => (
+                <div
+                  key={cmd}
+                  className="flex items-center gap-3 bg-navy border border-white/10 rounded-xl px-5 py-4 text-left"
+                >
+                  <span className="text-honey text-lg flex-shrink-0" aria-hidden="true">🎙️</span>
+                  <span className="text-sm text-white/80 italic">"{cmd}"</span>
+                </div>
+              ))}
+            </div>
           </div>
+        </section>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="bg-navy-light border border-white/8 rounded-2xl p-6 hover:border-honey/30 transition-all group"
-              >
-                <div className="text-3xl mb-4">{f.icon}</div>
-                <h3 className="font-semibold text-white mb-2 group-hover:text-honey transition-colors">
-                  {f.title}
-                </h3>
-                <p className="text-sm text-white/50 leading-relaxed">{f.desc}</p>
-              </div>
-            ))}
+        {/* Personas */}
+        <section className="py-24 px-6" aria-labelledby="personas-heading">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14">
+              <h2 id="personas-heading" className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                Built for people who are <span className="text-gradient">always moving.</span>
+              </h2>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {PERSONAS.map((p) => (
+                <div
+                  key={p.role}
+                  className="bg-navy-light border border-white/8 rounded-2xl p-6"
+                >
+                  <div className="text-4xl mb-4" aria-hidden="true">{p.emoji}</div>
+                  <p className="text-sm font-semibold text-honey mb-3">{p.role}</p>
+                  <p className="text-sm text-white/60 italic leading-relaxed">"{p.quote}"</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Voice commands showcase */}
-      <section className="py-20 px-6 bg-navy-dark">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Just say what you need.
-          </h2>
-          <p className="text-white/50 mb-12">Real commands. Real results.</p>
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            {[
-              "Schedule a team lunch Friday at noon",
-              "Move my dentist appointment to next week",
-              "What's tomorrow look like?",
-              "Find 45 minutes for focused work this week",
-              "Block Thursday afternoon — I need to prep",
-              "Remind me about the Johnson proposal at 8am Monday",
-            ].map((cmd) => (
-              <div
-                key={cmd}
-                className="flex items-center gap-3 bg-navy border border-white/10 rounded-xl px-5 py-4 text-left"
-              >
-                <span className="text-honey text-lg flex-shrink-0">🎙️</span>
-                <span className="text-sm text-white/80 italic">"{cmd}"</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Personas */}
-      <section className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Built for people who are <span className="text-gradient">always moving.</span>
+        {/* Clockwise migration */}
+        <section className="py-20 px-6 bg-navy-dark border-y border-white/10" aria-labelledby="clockwise-heading">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-4 py-1.5 text-sm text-red-400 mb-6">
+              <span aria-hidden="true">📢</span> Clockwise shut down March 27, 2026
+            </div>
+            <h2 id="clockwise-heading" className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Switching from Clockwise?
             </h2>
+            <p className="text-white/60 mb-4 leading-relaxed">
+              Clockwise was the best smart scheduler out there. Now it's gone — and Reclaim is built for enterprise teams, not individual iPhone users.
+            </p>
+            <p className="text-white/60 mb-8 leading-relaxed">
+              Busy Bee picks up where Clockwise left off: AI-powered scheduling, conflict resolution, and focus time protection — all on iOS, all by voice.
+            </p>
+            <div className="flex flex-col items-center gap-4">
+              <WaitlistForm source="clockwise" />
+              <p className="text-sm text-honey">
+                Clockwise users get free early access + 1 free month of Busy Bee Premium.
+              </p>
+            </div>
           </div>
+        </section>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {PERSONAS.map((p) => (
-              <div
-                key={p.role}
-                className="bg-navy-light border border-white/8 rounded-2xl p-6"
-              >
-                <div className="text-4xl mb-4">{p.emoji}</div>
-                <p className="text-sm font-semibold text-honey mb-3">{p.role}</p>
-                <p className="text-sm text-white/60 italic leading-relaxed">"{p.quote}"</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Clockwise migration */}
-      <section className="py-20 px-6 bg-navy-dark border-y border-white/10">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-4 py-1.5 text-sm text-red-400 mb-6">
-            📢 Clockwise shut down March 27, 2026
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Switching from Clockwise?
-          </h2>
-          <p className="text-white/60 mb-4 leading-relaxed">
-            Clockwise was the best smart scheduler out there. Now it's gone — and Reclaim is built for enterprise teams, not individual iPhone users.
-          </p>
-          <p className="text-white/60 mb-8 leading-relaxed">
-            Busy Bee picks up where Clockwise left off: AI-powered scheduling, conflict resolution, and focus time protection — all on iOS, all by voice.
-          </p>
-          <div className="flex flex-col items-center gap-4">
-            <WaitlistForm source="clockwise" />
-            <p className="text-sm text-honey">
-              Clockwise users get free early access + 1 free month of Busy Bee Premium.
+        {/* Final CTA */}
+        <section id="waitlist" className="py-28 px-6" aria-labelledby="cta-heading">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="flex justify-center mb-6">
+              <WaveformBeeIcon size={56} animated />
+            </div>
+            <h2 id="cta-heading" className="text-4xl sm:text-5xl font-black text-white mb-4">
+              <span className="text-gradient">Say it.</span> Scheduled.
+            </h2>
+            <p className="text-white/60 mb-10 text-lg">
+              Join the waitlist. Be first when Busy Bee launches April 14.
+            </p>
+            <div className="flex justify-center">
+              <WaitlistForm source="footer" />
+            </div>
+            <p className="text-xs text-white/40 mt-4">
+              iOS only · Free early access · No credit card required
             </p>
           </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section id="waitlist" className="py-28 px-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="flex justify-center mb-6">
-            <WaveformBeeIcon size={56} animated />
-          </div>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
-            <span className="text-gradient">Say it.</span> Scheduled.
-          </h2>
-          <p className="text-white/60 mb-10 text-lg">
-            Join the waitlist. Be first when Busy Bee launches April 14.
-          </p>
-          <div className="flex justify-center">
-            <WaitlistForm source="footer" />
-          </div>
-          <p className="text-xs text-white/25 mt-4">
-            iOS only · Free early access · No credit card required
-          </p>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {/* Footer */}
       <footer className="border-t border-white/10 py-8 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/30">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/40">
           <div className="flex items-center gap-2">
             <WaveformBeeIcon size={18} />
             <span>Busy Bee by Vorentoe</span>
           </div>
           <p>© 2026 Vorentoe. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="mailto:shannon@govorentoe.com" className="hover:text-white/60 transition-colors">
+            <a href="mailto:shannon@govorentoe.com" className="hover:text-white/70 transition-colors">
               Contact
             </a>
-            <a href="/privacy.html" className="hover:text-white/60 transition-colors">
+            <a href="/privacy.html" className="hover:text-white/70 transition-colors">
               Privacy
+            </a>
+            <a href="/terms.html" className="hover:text-white/70 transition-colors">
+              Terms
             </a>
           </div>
         </div>
