@@ -9,7 +9,9 @@ export const waitlistSignups = pgTable("waitlist_signups", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertWaitlistSchema = createInsertSchema(waitlistSignups).pick({
+export const insertWaitlistSchema = createInsertSchema(waitlistSignups, {
+  email: (s) => s.email().toLowerCase().trim(),
+}).pick({
   email: true,
   source: true,
 });
