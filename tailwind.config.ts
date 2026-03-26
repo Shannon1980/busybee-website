@@ -15,7 +15,7 @@ export default {
           light: "#243761",
           dark: "#111E33",
         },
-        pollen: "#FFD700",
+        pollen: "#FFD700", /* approved gradient accent — used in text-gradient utility */
         warm: {
           gray: "#F7F5F2",
           dark: "#E8E4DF",

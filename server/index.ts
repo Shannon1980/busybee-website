@@ -13,14 +13,26 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const isProd = process.env.NODE_ENV === "production";
 
+// Security headers
 app.use(helmet());
+
 app.use(express.json());
+
+// CORS — locked to production domain in prod
 app.use(cors({ origin: isProd ? "https://busybee.app" : true }));
 
+// Rate limiter for waitlist signup: 5 submissions per IP per 15 minutes
 const waitlistLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
-  message: { error: "Too many requests. Please try again later." },
+  message: { error: "Too many signups from this IP. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Health check
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
 });
 
 // Waitlist signup
@@ -52,11 +64,11 @@ app.post("/api/waitlist", waitlistLimiter, async (req, res) => {
   }
 });
 
-// Waitlist count (public, no auth needed for social proof)
+// Waitlist count — uses COUNT(*) instead of fetching all rows
 app.get("/api/waitlist/count", async (_req, res) => {
   try {
-    const result = await db.select({ value: count() }).from(waitlistSignups);
-    return res.json({ count: result[0].value });
+    const [{ value }] = await db.select({ value: count() }).from(waitlistSignups);
+    return res.json({ count: value });
   } catch (err) {
     return res.status(500).json({ error: "Could not fetch count." });
   }
