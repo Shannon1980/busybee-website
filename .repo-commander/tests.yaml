@@ -1,0 +1,52 @@
+version: "1"
+
+app:
+  name: busybee-website
+  repo: Shannon1980/busybee-website
+  description: BusyBee public landing page and waitlist portal
+
+defaults:
+  nodeVersion: "20"
+  timeoutSecs: 120
+
+suites:
+  - id: security-deps
+    type: security-deps
+    cmd: npm audit --audit-level=high
+    tags: [security, nightly]
+
+triggers:
+  on_pr: true
+  nightly: "0 6 * * *"
+  manual: true
+
+notifications:
+  on: [failure]
+
+app_structure:
+  framework: vite-react
+  source_dirs:
+    - client/src/
+    - server/
+  features:
+    - name: landing
+      description: Public landing page with hero, features, and waitlist signup
+      paths:
+        - "client/src/App.tsx"
+        - "client/src/main.tsx"
+        - "client/index.html"
+
+    - name: waitlist_api
+      description: Express API for waitlist email capture with rate limiting
+      paths:
+        - "server/index.ts"
+        - "server/schema.ts"
+        - "server/db.ts"
+      routes:
+        - "/api/waitlist"
+
+    - name: firebase_deployment
+      description: Firebase Hosting and Cloud Functions deployment config
+      paths:
+        - "firebase.json"
+        - "functions/"
