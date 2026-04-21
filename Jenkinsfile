@@ -1,7 +1,8 @@
 // Jenkinsfile — busybee-website
-// Vite/React + Express app — security-deps audit.
+// Vite + React landing page / Express waitlist API.
+// Supports suite: security-deps (npm audit)
 // Job naming convention: busybee-website-{suite-id}
-// Jenkins credential required: "github-pat" (GitHub PAT with repo:status scope)
+// Jenkins credentials: "github-userpass" (git clone), "github-pat" (API status)
 
 pipeline {
   agent any
@@ -18,7 +19,7 @@ pipeline {
   }
 
   options {
-    timeout(time: 30, unit: 'MINUTES')
+    timeout(time: 10, unit: 'MINUTES')
     timestamps()
     buildDiscarder(logRotator(numToKeepStr: '50'))
   }
@@ -27,7 +28,7 @@ pipeline {
     stage('Checkout') {
       steps {
         git url: 'https://github.com/Shannon1980/busybee-website.git',
-            credentialsId: 'github-pat',
+            credentialsId: 'github-userpass',
             branch: params.REF
       }
     }
